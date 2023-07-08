@@ -1,0 +1,20 @@
+proof {
+    display: block;
+}
+description {
+    display: block;
+}
+date {
+    display: block;
+}
+
+author {
+    display: block;
+}
+changes {
+    display:block;
+}
+.header {
+    padding-left: 1%;
+    display: block;
+}
