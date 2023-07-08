@@ -4,6 +4,48 @@
 <meta charset="utf-8" />
 </head>
 <body>
-Ide írd a használt Gödel-számozás leírását.
+A használt Gödel-számozás:<br/><br/>
+00 – nullás számjegy<br />
+01 – egyes számjegy<br />
+02 – kettes számjegy<br />
+03 – hármas számjegy <br />
+...<br />
+09 – kilences számjegy <br />
+10 – nyitó zárójel <br />
+11 – záró zárójel <br />
+12 – összeadásjel <br />
+13 – szorzásjel <br />
+14 – hatványozásjel <br />
+15 – mínuszjel <br />
+16 – gyökvonás jele <br />
+17 – logaritmus <br />
+18 – szeparátor (a szokott jelölésrendszerben a vessző két szám között, pl. többváltozós függvényekben; emellett a vektorok koordinátáit is ez választja el) <br/>
+19 – tizedesvessző <br />
+20 – egzisztenciális kvantor <br />
+21 – kettőspont az „amire” értelemben <br />
+22 – univerzális kvantor <br />
+23 – Halmazba tartozást kifejező jel (pl. „x <i>eleme</i> a racionális számok halmazának”)<br/>
+24 – Nagyobb, mint <br/>
+25 – Kisebb, mint <br/>
+26 – logikai negáció<br/>
+27 – OR, halmazok uniója<br/>
+28 – AND, halmazok metszete<br/>
+29 – XOR <br/>
+30 – --> <br />
+31 – = <br/>
+32–66 – szabadon választott változók <br />
+67 – pozitív számok halmaza <br />
+68 – természetes számok halmaza<br/>
+69 – egész számok halmaza<br/>
+70 – racionális számok halmaza<br/>
+71 – valós számok halmaza<br/>
+72 – a komplex számok halmaza<br/>
+73–95 – tetszőleges konstansok<br/>
+96 – abszolútérték-függvény (természetesen itt is zárójelbe kell tenni a paramétert)<br/>
+97 – vektor (zárójelbe kell utána tenni a koordinákat, ha használjuk azokat)<br/>
+98 – integráljel<br/>
+99 – a deriválást jelzi<br/>
+
+Kivonás szándékosan nincs, negatív szám hozzáadásával kell kezelni, az osztást a –1. hatványra emeléssel és szorzással. A zárójelezés elég szigorú: hatványozásnál a kitevőt, kvantifikációnál a változóneveket, és integrálásnál/deriválásnál az integrálandó/deriválandó függvényt mindig zárójelbe kell tenni. 
 </body>
 </html>

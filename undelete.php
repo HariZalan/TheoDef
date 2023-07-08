@@ -1,5 +1,8 @@
 <?php
 session_start();
+if (!$_SESSION["email"]) {
+    die("Be kell jelentkezned.");
+}
 if ($_GET["gnum"]) {
     $gnum = $_GET["gnum"];
     $whoCanDelete=file_get_contents("whoCanDelete.php");

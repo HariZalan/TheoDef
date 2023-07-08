@@ -8,12 +8,26 @@
    }
    return $result;
 }
+if ($_GET["gnum"]) {
+include("./goedel_numbers->algebratic_signs.inc.php");
+$toTranslate=str_split($_GET["gnum"],2);
+$translated="";
+for ($i = 0; $toTranslate[$i]; $i++) {
+$translated .= $_TRANSLATOR[$toTranslate[$i]];
+};
+};
 echo ("<!DOCTYPE html><html>\n<head>\n<meta charset='utf-8' />\n<title>TheoDef</title>\n<link rel='stylesheet' href='./stylesheet.css?preventCaching".rand(1000,100000)."'/>\n</head>\n<body>\n");
 echo ("<a href='about.html' class='header'>Mi a TheoDef?</a><a href='./help.html' class='header'>Az itt használt Gödel-számozás leírása</a><a href='reports.php' class='header'>Technikai hibák jelentése, segítségkérés, javaslattétel</a><a href='./latestedits.php' class='header'>A szerkesztéslista (2023. június 27., 17:40-től van benne minden információ, ami a változatokhoz tartozik a tartalom mellett)</a><br/><br/>");
-echo ("<span class='header'>A weboldal jelenleg átdolgozás alatt áll, előfordulhat egyes funkciók átmeneti működésképtelensége.</span> <p></p>");
+echo ("<span class='header'>A weboldal jelenleg átdolgozás alatt áll, előfordulhat egyes funkciók átmeneti működésképtelensége.</span> <p><h1>$translated</h1></p><p></p>");
 if (isset ($_GET ["gnum"])) {
   $gnum = $_GET ["gnum"];
   $toParse = file_get_contents("./theorems/$gnum.xml");
+  $toParse = str_ireplace("<script","&lt;script",$toParse);
+  $toParse = str_ireplace("script>","script&gt;",$toParse);
+  $toParse = str_ireplace('/javascript">','/javascript"&gt;',$toParse);
+  $toParse = str_ireplace("onclick=","onlick=",$toParse);
+  $toParse = str_ireplace("onhover=","onhoer=",$toParse);
+  $toParse = str_ireplace("onload=","onoad=",$toParse);
   if ($toParse) {
     echo("<a href='addtheorem.php?gnum=$gnum' class='header'>Módosítás</a><a href='viewAllversions.php?gnum=$gnum'>Összes változat megtekintése</a><br/><br/>");
     $parsedText = tag_contents($toParse, "<description>", "</description>");
