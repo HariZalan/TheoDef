@@ -16,6 +16,7 @@ if (!isset($_SESSION["email"])) {
     die("Mivel nem jelentkeztél be, nem tudsz szerkeszteni. Bejelentkezni <a href='./preLogIn.php'>itt</a> tudsz.");
 }
 include("./emailAddressesandUsernames.php");
+include("userBlacklist.php");
 ?>
 <form method="post" action="./addtheorem.php">
 <input type="number" name="goedel_number_of_the_theorem" required placeholder="A tétel Gödel-száma" value="<?php
@@ -78,12 +79,18 @@ $proof = $_POST["proof"];
 $changes =$_POST["changes"];
 date_default_timezone_set("Budapest");
 $date = date("Y. m. d., h:i:sa");
+$contentToParse=file_get_contents("./theorems/".$gnott.".xml");
+$contentToParse=str_replace("<xml>","",$contentToParse);
+$contentToParse=str_replace("</xml>","",$contentToParse);
+$file=fopen("./theorems/".$gnott.".xml","w");
+fwrite($file,"<xml>".$contentToParse);
+fclose($file);
 $file = fopen ("./theorems/".$gnott.".xml", "a");
 $author = $_SESSION["email"];
 if ($_USERNAME[$author]) {
     $author = $_USERNAME[$author];
 }
-fwrite($file, "<version>\n<current />\n<date>$date</date><author>$author</author><proof>$proof</proof>\n<description>$ttnl</description>\n<changes>$changes</changes>\n</version>");
+fwrite($file, "<version>\n<date>$date</date><author>$author</author><proof>$proof</proof>\n<description>$ttnl</description>\n<changes>$changes</changes>\n</version></xml>");
 fclose($file);
 $file=fopen("./latestedits.inc", "a");
 fwrite($file, "<tr><td>$gnott</td>   <td>$author</td>   <td>$date</td>   <td>$changes</td></tr>");
