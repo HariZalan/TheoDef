@@ -2,16 +2,16 @@
 session_start();
 if (isset($_POST["code"])) {
 	if (md5($_POST["code"]) == $_COOKIE['code']) {
-		$_SESSION['email'] = $_SESSION["unconfirmedEmail"];
+		setcookie('email', $_SESSION["unconfirmedEmail"], time() + 31536000, "/");
 		setcookie('code', $_COOKIE["code"], time() + 1, "/");
-		$_SESSION['unconfirmedEmail']= "";
-		echo ('Rendben. Beléptél.');
-		include("emailAddressesandUsernames.php");
-		if ($_USERNAME[$_SESSION["email"]]) {
+		require("./emailAddressesandUsernames.php");
+		if ($_USERNAME[$_SESSION["unconfirmedEmail"]]) {
 		header ("Location: /hu/TheoDef/index.php");
 		} else {
 		  header("Location: /hu/TheoDef/registration.php");  
 		};
+		$_SESSION['unconfirmedEmail'] = "";
+
 		
 		} else {
 		    echo ('A kód hibás.');

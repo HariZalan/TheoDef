@@ -7,19 +7,27 @@
        }
    }
    return $result;
-}
-if ($_GET["gnum"]) {
+};
+function graph($parsedText) {
+    $graph = tag_contents($parsedText,"<graph>","</graph>");
+    $Graph = $graph[0];
+    $graph2=str_replace(["whitep","blackp","break"],["<area shape=\"rect\" href=\"./white.svg\" class=\"graphpixel\"/>","<area shape=\"rect\" href=\"./black.svg\" class=\"graphpixel\"/>","<br/>"],$Graph);
+    $parsedText=str_replace("<graph>$Graph</graph>","<map>".$graph2."</map>",$parsedText);
+    return $parsedText;
+};
 include("./goedel_numbers->algebratic_signs.inc.php");
+if ($_GET["gnum"]) {
 $toTranslate=str_split($_GET["gnum"],2);
 $translated="";
 for ($i = 0; $toTranslate[$i]; $i++) {
 $translated .= $_TRANSLATOR[$toTranslate[$i]];
 };
 };
-echo ("<!DOCTYPE html><html>\n<head>\n<meta charset='utf-8' />\n<title>TheoDef</title>\n<link rel='stylesheet' href='./stylesheet.css?preventCaching".rand(1000,100000)."'/>\n</head>\n<body>\n");
-echo ("<a href='about.html' class='header'>Mi a TheoDef?</a><a href='./help.html' class='header'>Az itt használt Gödel-számozás leírása</a><a href='reports.php' class='header'>Technikai hibák jelentése, segítségkérés, javaslattétel</a><a href='./latestedits.php' class='header'>A szerkesztéslista (2023. június 27., 17:40-től van benne minden információ, ami a változatokhoz tartozik a tartalom mellett)</a><br/><br/>");
-echo ("<span class='header'>A weboldal jelenleg átdolgozás alatt áll, előfordulhat egyes funkciók átmeneti működésképtelensége.</span> <p><h1>$translated</h1></p><p></p>");
-if (isset ($_GET ["gnum"])) {
+$header=tag_contents(file_get_contents("./theorems/Fejléc.xml"),"<description>","</description>");
+$header=$header[count($header)-1];
+echo $header;
+echo ("<h1>".$translated."</h1><p></p>");
+if ($_GET ["gnum"]) {
   $gnum = $_GET ["gnum"];
   $toParse = file_get_contents("./theorems/$gnum.xml");
   $toParse = str_ireplace("<script","&lt;script",$toParse);
@@ -28,21 +36,75 @@ if (isset ($_GET ["gnum"])) {
   $toParse = str_ireplace("onclick=","onlick=",$toParse);
   $toParse = str_ireplace("onhover=","onhoer=",$toParse);
   $toParse = str_ireplace("onload=","onoad=",$toParse);
+  $toParse=str_replace(["{{{{{","}}}}}"],["<em><strong>","</strong></em>"],$toParse);
+  $toParse=str_replace(["{{{","}}}"],["<strong>","</strong>"],$toParse);
+  $toParse=str_replace(["{{","}}"],["<em>","</em>"],$toParse);
   if ($toParse) {
-    echo("<a href='addtheorem.php?gnum=$gnum' class='header'>Módosítás</a><a href='viewAllversions.php?gnum=$gnum'>Összes változat megtekintése</a><br/><br/>");
+    if (isset($_GET["version"]) and $_GET["version"]!=="") {
+        $versionInfo="&editversion=".$_GET["version"];
+    }
+    echo("<a href='addtheorem.php?gnum=$gnum$versionInfo' class='header'>Módosítás"."</a><a href='viewAllversions.php?gnum=$gnum'>Összes változat megtekintése</a><br/><br/>");
     $parsedText = tag_contents($toParse, "<description>", "</description>");
+    $innerLink="\$parsedText2=explode(\"Link\",\$parsedText);
+    for (\$I=1; \$parsedText2[\$I]; \$I+=2) {
+                if (str_replace(\"|\",\"\", \$parsedText2[\$I])!=\$parsedText2[\$I]) {
+                \$parsedText2[\$I]=\"<a href='./?gnum=\".explode(\"|\",\$parsedText2[\$I])[0].\"'>\".explode(\"|\",\$parsedText2[\$I])[1].\"</a>\";
+                } else {
+                    \$parsedText2[\$I]=\"<a href='./?gnum=\".\$parsedText2[\$I].\"'>~~~\".\$parsedText2[\$I].\"~~~</a>\";
+
+                }
+        }
+        \$parsedText=implode(\"\",\$parsedText2);
+    ";
+    $translate="
+        \$parsedText2=explode(\"~~~\",\$parsedText);
+    for (\$I=1; \$parsedText2[\$I]; \$I+=2) {
+                \$x=str_split(\$parsedText2[\$I],2);
+                \$parsedText2[\$I]=\"\";
+        for (\$J=0; \$x[\$J]; \$J++) {
+        \$parsedText2[\$I].=\$_TRANSLATOR[\$x[\$J]];
+    
+            }
+        }
+        \$parsedText=implode(\"\",\$parsedText2);
+    ";
+    $categorisate="\$parsedText2=explode(\"Cat\",\$parsedText);
+    for (\$I=1; \$parsedText2[\$I]; \$I+=2) {
+                \$parsedText2[\$I]=\"<a href='fullTextSearch.php?q=Cat\".\$parsedText2[\$I].\"Cat'>Az összes cikk a(z) „\".\$parsedText2[\$I].\"” témában</a>\";
+        }
+        \$parsedText=implode(\"\",\$parsedText2);
+    ";
+    if (isset($_GET["version"])) {
+        $parsedText=$parsedText[$_GET["version"]];
+        if (!$parsedText) {
+            echo("Nincs ilyen változat.");
+        }
+    } else {
     $len = count($parsedText) - 1;
     $parsedText = $parsedText[$len];
-    echo ("<p>A tétel érthetőbb formában: ".$parsedText."</p>");
+    };
+  //  $parsedText = graph($parsedText);
+    eval($innerLink);
+    eval($translate);
+    eval($categorisate);
+    echo ("<p>A tétel főleg szöveges formában: ".$parsedText."</p>");
     $parsedText = tag_contents($toParse, "<proof>", "</proof>");
+    if (isset($_GET["version"])) {
+        $parsedText=$parsedText[$_GET["version"]];
+    } else {
     $len = count($parsedText) - 1;
     $parsedText = $parsedText[$len];
+    }
+    eval($innerLink);
+    eval($translate);
+    eval($categorisate);
     echo ("<p>A bizonyítás: ".$parsedText."</p>");
 } else {
     echo ("Az ezen Gödel-számmal bíró állítás hamis, ilyen tételt még senki nem küldött be, vagy nonszensz a Gödel-szám. A második fennállta esetén kattints <a href='addtheorem.php?gnum=$gnum'>ide</a>, és küldd be.");
 }
 } else {
-/*if (isset($_GET ["gnum"])) {
+/*The code of the old version (https://zalan.withssl.com/TheoDef_old) to handle that:
+if (isset($_GET ["gnum"])) {
 $gnum = $_GET["gnum"];
 $x = file_get_contents ("./theorems/".$gnum);
 $y = file_get_contents ("./theorems/".$gnum.".proof");
@@ -68,8 +130,14 @@ echo ("<a href='?gnum=$_WORDS[$x]' class='theList'>".$_WORDS[$x]."</a><br />");
 $files=scandir("theorems/");
 $string = "<p>A TheoDefben található tételek: </p>";
 for ($i = 2; $files[$i]; $i++) {
-    $string.="<a href='?gnum=".str_replace(".xml","",$files[$i])."'>".str_replace(".xml","",$files[$i])."</a><br/>";
+    $toDisplay[$i]=str_replace(".xml","",$files[$i]);
+    $toDisplay[$i]=str_split($toDisplay[$i],2);
+    $toDisplayNew=[];
+    for ($j = 0; $toDisplay[$i][$j]; $j++) {
+    $toDisplayNew[$i].= $_TRANSLATOR[$toDisplay[$i][$j]];
+    };
+    $string.="<a href='?gnum=".str_replace(".xml","",$files[$i])."'>".$toDisplayNew[$i]."</a><br/>";
 };
-echo ($string);
+echo ($string."<form action=\"search.php\">\nA lekérni kívánt tételleírás tárgyának Gödel-száma (az alapértelmezett értéket megtartva a kezdőlapra visz a lap elején található „Mi a TheoDef?” és a felsorolásban található „MainPage” linkhez hasonlóan): \n<input type=\"number\" name=\"gnum\"  value=\"8532404588323836\"/>\n<input type=\"submit\" value=\"Lekérés\"/>\n</form>");
 };
 ?>

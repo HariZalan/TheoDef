@@ -1,12 +1,12 @@
 <?php
 session_start();
-if (!$_SESSION["email"]) {
+if (!$_COOKIE["email"]) {
     die("Be kell jelentkezned.");
 }
 if ($_GET["gnum"]) {
     $gnum = $_GET["gnum"];
     $whoCanDelete=file_get_contents("whoCanDelete.php");
-    if (str_replace(" ".$_SESSION["email"],"",$whoCanDelete)!=$whoCanDelete) {
+    if (str_replace(" ".$_COOKIE["email"],"",$whoCanDelete)!=$whoCanDelete) {
         $data = file_get_contents("./deleted/$gnum");
         $file = fopen("./theorems/$gnum.xml","a");
         fwrite($file,str_replace("Helyreállítva","",str_replace("Törölve.","",$data)));

@@ -1,20 +1,34 @@
-proof {
+.proof {
     display: block;
 }
-description {
+.description {
     display: block;
 }
-date {
+.date {
     display: block;
 }
-
-author {
+.author {
     display: block;
 }
-changes {
+.changes {
+    display:block;
+}
+.descriptionLength {
+    display:block;
+}
+.proofLength {
     display:block;
 }
 .header {
     padding-left: 1%;
     display: block;
 }
+.graphpixel {
+    height: 1px;
+    width: 1px;
+    display: inline-block;
+}
+graph {
+    display: block;
+    
+}	
